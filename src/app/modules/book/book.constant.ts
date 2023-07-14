@@ -6,6 +6,7 @@ export const bookFilterableFields = [
   "author",
   "genre",
   "publicationDate",
+  "publicationYear",
 ];
 
 export type IBookFilters = {

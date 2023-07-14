@@ -8,7 +8,7 @@ import { JwtPayload, Secret } from "jsonwebtoken";
 // import bcrypt from "bcrypt";
 
 const createUser = async (payload: IUser): Promise<IUser> => {
-  payload.income = 0;
+  payload.role = "user";
   const result = await User.create(payload);
   return result;
 };
@@ -101,7 +101,8 @@ const loginUser = async (
 
   const isUserExists = await User.isUserExists(email);
 
-  if (!isUserExists) throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  if (!isUserExists)
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found, Signup please!");
 
   const passwordMatch = await User.isPasswordMatched(
     password,

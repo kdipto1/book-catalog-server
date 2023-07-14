@@ -23,4 +23,5 @@ export type IBookFilters = {
   author?: string;
   genre?: string;
   publicationDate?: string;
+  publicationYear?: string;
 };

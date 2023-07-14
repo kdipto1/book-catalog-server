@@ -71,9 +71,17 @@ const getAllBooks = async (
   /**
    * todo : search
    */
-  const { searchTerm, ...filtersData } = filters;
+  const { searchTerm, publicationYear, ...filtersData } = filters;
   const searchCondition = [];
 
+  if (publicationYear) {
+    const startOfYear = new Date(`${publicationYear}-01-01`);
+    const endOfYear = new Date(`${publicationYear}-12-31`);
+    const publicationDateCondition = {
+      publicationDate: { $gte: startOfYear, $lte: endOfYear },
+    };
+    searchCondition.push(publicationDateCondition);
+  }
   if (searchTerm) {
     searchCondition.push({
       $or: bookSearchableFields.map(field => ({
@@ -94,7 +102,8 @@ const getAllBooks = async (
   const result = await Book.find(availableSearch)
     .sort(sortCondition)
     .skip(skip)
-    .limit(limit);
+    .limit(limit)
+    .exec();
   const count = await Book.count(availableSearch);
   return {
     result,
