@@ -111,10 +111,27 @@ const getAllBooks = async (
   };
 };
 
+const getHomeBooks = async (
+  limit: number,
+  sortBy: string,
+  sortOrder: SortOrder
+) => {
+  const sortCondition: { [key: string]: SortOrder } = {};
+  if (sortBy && sortOrder) {
+    sortCondition[sortBy] = sortOrder;
+  }
+
+  const result = await Book.find().sort(sortCondition).limit(limit).exec();
+  return {
+    result,
+  };
+};
+
 export const BookService = {
   createBook,
   getSingleBook,
   updateBook,
   deleteBook,
   getAllBooks,
+  getHomeBooks,
 };

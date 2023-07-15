@@ -81,8 +81,8 @@ const getAllBooks: RequestHandler = async (req, res, next) => {
     const page = Number(req.query.page || 1);
     const limit = Number(req.query.limit || 10);
     const skip = (page - 1) * limit;
-    const sortBy = (req.query.sortBy as string) || "createdAt";
-    const sortOrder: SortOrder = (req.query.sortOrder as SortOrder) || "desc";
+    const sortBy = (req.query.sortBy as string) || "";
+    const sortOrder: SortOrder = (req.query.sortOrder as SortOrder) || "asc";
 
     const result = await BookService.getAllBooks(
       skip,
@@ -106,6 +106,29 @@ const getAllBooks: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+const getHomeBooks: RequestHandler = async (req, res, next) => {
+  try {
+    const page = 1;
+    const limit = 10;
+    // const skip = (page - 1) * limit;
+    const sortBy = "createdAt";
+    const sortOrder: SortOrder = "desc";
+
+    const result = await BookService.getHomeBooks(limit, sortBy, sortOrder);
+    res.status(httpStatus.OK).json({
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Books retrieved successfully",
+      meta: {
+        page,
+        limit,
+      },
+      data: result.result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const BookController = {
   createBook,
@@ -113,4 +136,5 @@ export const BookController = {
   updateBook,
   deleteBook,
   getAllBooks,
+  getHomeBooks,
 };
