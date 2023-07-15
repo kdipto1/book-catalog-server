@@ -126,6 +126,7 @@ const loginUser = async (
   return {
     accessToken,
     refreshToken,
+    userId: isUserExists._id,
   };
 };
 

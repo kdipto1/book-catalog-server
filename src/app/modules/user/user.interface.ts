@@ -32,4 +32,5 @@ export type UserModel = {
 export type IUserLoginResponse = {
   accessToken: string;
   refreshToken: string;
+  userId: Types.ObjectId | undefined;
 };

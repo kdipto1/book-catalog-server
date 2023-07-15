@@ -86,7 +86,6 @@ const loginUser: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body;
     const result = await UserService.loginUser(data);
-
     const { refreshToken, ...otherResults } = result;
     const cookieOptions = {
       secure: config.env === "production",
