@@ -1,6 +1,6 @@
 import { Model, Schema } from "mongoose";
 
-type IReviews = {
+export type IReviews = {
   reviewer: Schema.Types.ObjectId;
   rating: number;
   comment: string;

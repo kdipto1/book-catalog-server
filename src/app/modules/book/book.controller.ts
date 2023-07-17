@@ -47,7 +47,23 @@ const updateBook: RequestHandler = async (req, res, next) => {
     const id = req.params.id;
     const user = req.user;
     const data = req.body;
-    const result = await BookService.updateBook(id, user, data);
+    const result = await BookService.updateBook(id, data, user);
+    res.status(httpStatus.OK).json({
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Book updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+const addBookReview: RequestHandler = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const user = req.user;
+    const review = req.body;
+    const result = await BookService.addBookReview(id, review, user);
     res.status(httpStatus.OK).json({
       success: true,
       statusCode: httpStatus.OK,
@@ -79,7 +95,7 @@ const getAllBooks: RequestHandler = async (req, res, next) => {
   try {
     const filters = pick(req.query, bookFilterableFields);
     const page = Number(req.query.page || 1);
-    const limit = Number(req.query.limit || 10);
+    const limit = Number(req.query.limit || 1000);
     const skip = (page - 1) * limit;
     const sortBy = (req.query.sortBy as string) || "";
     const sortOrder: SortOrder = (req.query.sortOrder as SortOrder) || "asc";
@@ -137,4 +153,5 @@ export const BookController = {
   deleteBook,
   getAllBooks,
   getHomeBooks,
+  addBookReview,
 };

@@ -5,7 +5,7 @@ import { SortOrder } from "mongoose";
 import ApiError from "../../../errors/ApiError";
 import httpStatus from "http-status";
 import { JwtPayload } from "jsonwebtoken";
-import { IBook, IBookFilters } from "./book.interface";
+import { IBook, IBookFilters, IReviews } from "./book.interface";
 import { Book } from "./book.model";
 import { bookSearchableFields } from "./book.constant";
 
@@ -23,21 +23,44 @@ const getSingleBook = async (id: string): Promise<IBook | null> => {
 
 const updateBook = async (
   id: string,
-  user: JwtPayload,
-  payload: Partial<IBook>
+  payload: Partial<IBook>,
+  user: JwtPayload
 ): Promise<IBook | null> => {
   const isExist = await Book.findById(id);
   if (!isExist) {
     throw new ApiError(httpStatus.NOT_FOUND, "Book Not found!");
   }
-  // const cowSellerId = isExist.seller;
-  // console.log(seller);
   if (user.userId !== isExist.addedBy.toString())
     throw new ApiError(httpStatus.BAD_REQUEST, "You can't update this book!");
 
-  const result = await Book.findByIdAndUpdate(id, payload, {
+  const result = await Book.findByIdAndUpdate(isExist._id, payload, {
     new: true,
   });
+  return result;
+};
+
+const addBookReview = async (
+  id: string,
+  payload: IReviews,
+  user: JwtPayload
+): Promise<IBook | null> => {
+  const isExist = await Book.findById(id);
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Book Not found!");
+  }
+  const review: IReviews = {
+    reviewer: user.userId,
+    rating: payload.rating,
+    comment: payload.comment,
+  };
+
+  const result = await Book.findByIdAndUpdate(
+    { id: isExist.id },
+    { $push: { reviews: review } },
+    {
+      new: true,
+    }
+  );
   return result;
 };
 
@@ -134,4 +157,5 @@ export const BookService = {
   deleteBook,
   getAllBooks,
   getHomeBooks,
+  addBookReview,
 };
