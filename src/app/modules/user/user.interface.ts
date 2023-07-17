@@ -10,8 +10,7 @@ export type IUser = {
     lastName: string;
   };
   address: string;
-  budget: number;
-  income: number;
+  wishlist?: [Types.ObjectId];
 };
 
 // export type UserModel = Model<IUser, Record<string, unknown>>;

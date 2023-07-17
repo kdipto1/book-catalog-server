@@ -153,6 +153,37 @@ const updateMyProfile: RequestHandler = async (req, res, next) => {
   }
 };
 
+const addBookToWishlist: RequestHandler = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const data = req.body;
+    const result = await UserService.addBookToWishlist(user, data);
+    res.status(200).json({
+      success: "true",
+      statusCode: httpStatus.OK,
+      message: "Book added to wishlist successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getWishlist: RequestHandler = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const result = await UserService.getWishlist(user);
+    res.status(200).json({
+      success: "true",
+      statusCode: httpStatus.OK,
+      message: "wishlist retrieved successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const UserController = {
   createUser,
   getSingleUser,
@@ -163,4 +194,6 @@ export const UserController = {
   refreshToken,
   getMyProfile,
   updateMyProfile,
+  addBookToWishlist,
+  getWishlist,
 };

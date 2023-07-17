@@ -33,6 +33,9 @@ const userSchema = new mongoose.Schema<IUser, UserModel>(
       type: String,
       required: true,
     },
+    wishlist: [
+      { bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Book" } },
+    ],
   },
   {
     timestamps: true,

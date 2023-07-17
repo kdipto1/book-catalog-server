@@ -19,7 +19,7 @@ const getSingleBook = async (id: string): Promise<IBook | null> => {
   const result = await Book.findById(id)
     .populate({
       path: "reviews.reviewer",
-      select: "name.firstName",
+      select: "name.firstName name.lastName",
     })
     .lean();
   if (!result) throw new ApiError(httpStatus.NOT_FOUND, "Book not found");
