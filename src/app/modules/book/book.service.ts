@@ -55,7 +55,7 @@ const addBookReview = async (
   };
 
   const result = await Book.findByIdAndUpdate(
-    { id: isExist.id },
+    id,
     { $push: { reviews: review } },
     {
       new: true,
