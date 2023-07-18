@@ -232,6 +232,35 @@ const getWishlist = async (user: JwtPayload): Promise<IUser | null> => {
   return result;
 };
 
+const addBookToReadingList = async (
+  user: JwtPayload,
+  payload: string
+): Promise<IUser | null> => {
+  const isExist = await User.findById(user.userId);
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User Not found!");
+  }
+  const result = await User.findByIdAndUpdate(
+    user.userId,
+    { $push: { readingList: payload } },
+    {
+      new: true,
+    }
+  );
+  return result;
+};
+
+const getReadingList = async (user: JwtPayload): Promise<IUser | null> => {
+  const isExist = await User.findById(user.userId);
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User Not found!");
+  }
+  const result = await User.findById(user.userId)
+    .select("readingList")
+    .populate("readingList.bookId", "-reviews");
+  return result;
+};
+
 export const UserService = {
   createUser,
   getSingleUser,
@@ -244,4 +273,6 @@ export const UserService = {
   updateMyProfile,
   addBookToWishlist,
   getWishlist,
+  addBookToReadingList,
+  getReadingList,
 };

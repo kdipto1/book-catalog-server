@@ -36,6 +36,15 @@ const userSchema = new mongoose.Schema<IUser, UserModel>(
     wishlist: [
       { bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Book" } },
     ],
+    readingList: [
+      {
+        bookId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Book",
+        },
+        readingState: Boolean,
+      },
+    ],
   },
   {
     timestamps: true,

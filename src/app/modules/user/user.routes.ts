@@ -18,6 +18,16 @@ router.get(
   auth(ENUM_USER_ROLE.USER),
   UserController.getWishlist
 );
+router.patch(
+  "/user/readingList",
+  auth(ENUM_USER_ROLE.USER),
+  UserController.addBookToReadingList
+);
+router.get(
+  "/user/readingList",
+  auth(ENUM_USER_ROLE.USER),
+  UserController.getReadingList
+);
 
 /* ------------------------------------- */
 router.get(

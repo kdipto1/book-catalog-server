@@ -10,7 +10,8 @@ export type IUser = {
     lastName: string;
   };
   address: string;
-  wishlist?: [Types.ObjectId];
+  wishlist?: [{ bookId: Types.ObjectId }];
+  readingList?: [{ bookId: Types.ObjectId; readingState: boolean }];
 };
 
 // export type UserModel = Model<IUser, Record<string, unknown>>;
