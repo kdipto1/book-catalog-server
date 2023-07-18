@@ -206,12 +206,22 @@ const updateMyProfile = async (
 
 const addBookToWishlist = async (
   user: JwtPayload,
-  payload: string
+  payload: { bookId: string }
 ): Promise<IUser | null> => {
   const isExist = await User.findById(user.userId);
   if (!isExist) {
     throw new ApiError(httpStatus.NOT_FOUND, "User Not found!");
   }
+  const isBookAlreadyInWishlist = isExist.wishlist?.some(
+    item => item.bookId.toString() === payload.bookId
+  );
+  if (isBookAlreadyInWishlist) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Book already exists in wishlist!"
+    );
+  }
+
   const result = await User.findByIdAndUpdate(
     user.userId,
     { $push: { wishlist: payload } },
@@ -235,12 +245,23 @@ const getWishlist = async (user: JwtPayload): Promise<IUser | null> => {
 
 const addBookToReadingList = async (
   user: JwtPayload,
-  payload: string
+  payload: { bookId: string }
 ): Promise<IUser | null> => {
   const isExist = await User.findById(user.userId);
   if (!isExist) {
     throw new ApiError(httpStatus.NOT_FOUND, "User Not found!");
   }
+
+  const isBookAlreadyInWishlist = isExist.readingList?.some(
+    item => item.bookId.toString() === payload.bookId
+  );
+  if (isBookAlreadyInWishlist) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Book already exists in reading list!"
+    );
+  }
+
   const result = await User.findByIdAndUpdate(
     user.userId,
     { $push: { readingList: payload } },
