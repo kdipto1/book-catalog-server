@@ -174,6 +174,100 @@ const updateMyProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         next(error);
     }
 });
+const addBookToWishlist = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        const data = req.body;
+        const result = yield user_service_1.UserService.addBookToWishlist(user, data);
+        res.status(200).json({
+            success: "true",
+            statusCode: http_status_1.default.OK,
+            message: "Book added to wishlist successfully",
+            data: result,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+const getWishlist = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        const result = yield user_service_1.UserService.getWishlist(user);
+        res.status(200).json({
+            success: "true",
+            statusCode: http_status_1.default.OK,
+            message: "wishlist retrieved successfully",
+            data: result,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+const addBookToReadingList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        const data = req.body;
+        const result = yield user_service_1.UserService.addBookToReadingList(user, data);
+        res.status(200).json({
+            success: "true",
+            statusCode: http_status_1.default.OK,
+            message: "Book added to reading list successfully",
+            data: result,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+const bookReadingState = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        const bookId = req.params;
+        const result = yield user_service_1.UserService.bookReadingState(user, bookId);
+        res.status(200).json({
+            success: "true",
+            statusCode: http_status_1.default.OK,
+            message: "Book marked as reading started",
+            data: result,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+const bookFinishState = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        const bookId = req.params;
+        const result = yield user_service_1.UserService.bookFinishState(user, bookId);
+        res.status(200).json({
+            success: "true",
+            statusCode: http_status_1.default.OK,
+            message: "Book marked as reading finished",
+            data: result,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+const getReadingList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        const result = yield user_service_1.UserService.getReadingList(user);
+        res.status(200).json({
+            success: "true",
+            statusCode: http_status_1.default.OK,
+            message: "reading list retrieved successfully",
+            data: result,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
 exports.UserController = {
     createUser,
     getSingleUser,
@@ -184,4 +278,10 @@ exports.UserController = {
     refreshToken,
     getMyProfile,
     updateMyProfile,
+    addBookToWishlist,
+    getWishlist,
+    addBookToReadingList,
+    getReadingList,
+    bookReadingState,
+    bookFinishState,
 };

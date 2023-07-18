@@ -29,9 +29,10 @@ const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const user_model_1 = require("./user.model");
 const jwtHelpers_1 = require("../../../helpers/jwtHelpers");
 const config_1 = __importDefault(require("../../../config"));
+const mongoose_1 = __importDefault(require("mongoose"));
 // import bcrypt from "bcrypt";
 const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    payload.income = 0;
+    payload.role = "user";
     const result = yield user_model_1.User.create(payload);
     return result;
 });
@@ -106,14 +107,14 @@ const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
 //   }
 // };
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { phoneNumber, password } = payload;
-    if (!phoneNumber)
-        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Phone number is required");
+    const { email, password } = payload;
+    if (!email)
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Email is required");
     if (!password)
         throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Password is required");
-    const isUserExists = yield user_model_1.User.isUserExists(phoneNumber);
+    const isUserExists = yield user_model_1.User.isUserExists(email);
     if (!isUserExists)
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User not found");
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User not found, Signup please!");
     const passwordMatch = yield user_model_1.User.isPasswordMatched(password, isUserExists.password);
     if (!passwordMatch)
         throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, "Invalid password");
@@ -123,6 +124,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     return {
         accessToken,
         refreshToken,
+        userId: isUserExists._id,
     };
 });
 const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
@@ -180,6 +182,86 @@ const updateMyProfile = (payload, data) => __awaiter(void 0, void 0, void 0, fun
     });
     return result;
 });
+const addBookToWishlist = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const isExist = yield user_model_1.User.findById(user.userId);
+    if (!isExist) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User Not found!");
+    }
+    const isBookAlreadyInWishlist = (_a = isExist.wishlist) === null || _a === void 0 ? void 0 : _a.some(item => item.bookId.toString() === payload.bookId);
+    if (isBookAlreadyInWishlist) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Book already exists in wishlist!");
+    }
+    const result = yield user_model_1.User.findByIdAndUpdate(user.userId, { $push: { wishlist: payload } }, {
+        new: true,
+    });
+    return result;
+});
+const getWishlist = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExist = yield user_model_1.User.findById(user.userId);
+    if (!isExist) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User Not found!");
+    }
+    const result = yield user_model_1.User.findById(user.userId)
+        .select("wishlist")
+        .populate("wishlist.bookId", "-reviews");
+    return result;
+});
+const addBookToReadingList = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
+    const isExist = yield user_model_1.User.findById(user.userId);
+    if (!isExist) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User Not found!");
+    }
+    const isBookAlreadyInWishlist = (_b = isExist.readingList) === null || _b === void 0 ? void 0 : _b.some(item => item.bookId.toString() === payload.bookId);
+    if (isBookAlreadyInWishlist) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Book already exists in reading list!");
+    }
+    const result = yield user_model_1.User.findByIdAndUpdate(user.userId, { $push: { readingList: payload } }, {
+        new: true,
+    });
+    return result;
+});
+const bookReadingState = (user, bookId) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExist = yield user_model_1.User.findById(user.userId);
+    if (!isExist) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User Not found!");
+    }
+    const isValidBookId = mongoose_1.default.isValidObjectId(bookId);
+    if (!isValidBookId) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Invalid bookId");
+    }
+    const result = yield user_model_1.User.findOneAndUpdate({
+        _id: user.userId,
+        "readingList.bookId": new mongoose_1.default.Types.ObjectId(bookId),
+    }, { $set: { "readingList.$.readingState": true } }, { new: true });
+    return result;
+});
+const bookFinishState = (user, bookId) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExist = yield user_model_1.User.findById(user.userId);
+    if (!isExist) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User Not found!");
+    }
+    const isValidBookId = mongoose_1.default.isValidObjectId(bookId);
+    if (!isValidBookId) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Invalid bookId");
+    }
+    const result = yield user_model_1.User.findOneAndUpdate({
+        _id: user.userId,
+        "readingList.bookId": new mongoose_1.default.Types.ObjectId(bookId),
+    }, { $set: { "readingList.$.finishState": true } }, { new: true });
+    return result;
+});
+const getReadingList = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExist = yield user_model_1.User.findById(user.userId);
+    if (!isExist) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User Not found!");
+    }
+    const result = yield user_model_1.User.findById(user.userId)
+        .select("readingList")
+        .populate("readingList.bookId", "-reviews");
+    return result;
+});
 exports.UserService = {
     createUser,
     getSingleUser,
@@ -190,4 +272,10 @@ exports.UserService = {
     refreshToken,
     getMyProfile,
     updateMyProfile,
+    addBookToWishlist,
+    getWishlist,
+    addBookToReadingList,
+    getReadingList,
+    bookReadingState,
+    bookFinishState,
 };

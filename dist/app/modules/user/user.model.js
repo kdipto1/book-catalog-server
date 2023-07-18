@@ -17,14 +17,14 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const config_1 = __importDefault(require("../../../config"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const userSchema = new mongoose_1.default.Schema({
-    phoneNumber: {
+    email: {
         type: String,
         required: true,
         unique: true,
     },
     role: {
         type: String,
-        enum: ["seller", "buyer"],
+        enum: ["user"],
         required: true,
     },
     password: {
@@ -45,14 +45,19 @@ const userSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
-    budget: {
-        type: Number,
-        required: true,
-    },
-    income: {
-        type: Number,
-        required: false,
-    },
+    wishlist: [
+        { bookId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Book" } },
+    ],
+    readingList: [
+        {
+            bookId: {
+                type: mongoose_1.default.Schema.Types.ObjectId,
+                ref: "Book",
+            },
+            readingState: Boolean,
+            finishState: Boolean,
+        },
+    ],
 }, {
     timestamps: true,
     toJSON: {
@@ -62,14 +67,14 @@ const userSchema = new mongoose_1.default.Schema({
         },
     },
 });
-userSchema.statics.isUserExists = function (phone) {
+userSchema.statics.isUserExists = function (email) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield exports.User.findOne({ phoneNumber: phone }, { _id: 1, password: 1, phoneNumber: 1, role: 1 });
+        return yield exports.User.findOne({ email: email }, { _id: 1, password: 1, email: 1, role: 1 });
     });
 };
 userSchema.statics.isUserExistsWithId = function (userId) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield exports.User.findOne({ _id: userId }, { _id: 1, password: 1, phoneNumber: 1, role: 1 });
+        return yield exports.User.findOne({ _id: userId }, { _id: 1, password: 1, email: 1, role: 1 });
     });
 };
 userSchema.statics.isPasswordMatched = function (incomingPass, databasePass) {
