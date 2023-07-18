@@ -23,6 +23,16 @@ router.patch(
   auth(ENUM_USER_ROLE.USER),
   UserController.addBookToReadingList
 );
+router.patch(
+  "/user/readingState/:id",
+  auth(ENUM_USER_ROLE.USER),
+  UserController.bookReadingState
+);
+router.patch(
+  "/user/finishState/:id",
+  auth(ENUM_USER_ROLE.USER),
+  UserController.bookFinishState
+);
 router.get(
   "/user/readingList",
   auth(ENUM_USER_ROLE.USER),

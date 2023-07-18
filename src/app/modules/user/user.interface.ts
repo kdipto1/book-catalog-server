@@ -11,7 +11,9 @@ export type IUser = {
   };
   address: string;
   wishlist?: [{ bookId: Types.ObjectId }];
-  readingList?: [{ bookId: Types.ObjectId; readingState: boolean }];
+  readingList?: [
+    { bookId: Types.ObjectId; readingState: boolean; finishState: boolean }
+  ];
 };
 
 // export type UserModel = Model<IUser, Record<string, unknown>>;

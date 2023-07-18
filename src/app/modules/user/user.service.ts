@@ -5,6 +5,7 @@ import { User } from "./user.model";
 import { JwtHelpers } from "../../../helpers/jwtHelpers";
 import config from "../../../config";
 import { JwtPayload, Secret } from "jsonwebtoken";
+import mongoose from "mongoose";
 // import bcrypt from "bcrypt";
 
 const createUser = async (payload: IUser): Promise<IUser> => {
@@ -250,6 +251,51 @@ const addBookToReadingList = async (
   return result;
 };
 
+const bookReadingState = async (
+  user: JwtPayload,
+  bookId: any
+): Promise<IUser | null> => {
+  const isExist = await User.findById(user.userId);
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User Not found!");
+  }
+  const isValidBookId = mongoose.isValidObjectId(bookId);
+  if (!isValidBookId) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid bookId");
+  }
+  const result = await User.findOneAndUpdate(
+    {
+      _id: user.userId,
+      "readingList.bookId": new mongoose.Types.ObjectId(bookId),
+    },
+    { $set: { "readingList.$.readingState": true } },
+    { new: true }
+  );
+  return result;
+};
+const bookFinishState = async (
+  user: JwtPayload,
+  bookId: any
+): Promise<IUser | null> => {
+  const isExist = await User.findById(user.userId);
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User Not found!");
+  }
+  const isValidBookId = mongoose.isValidObjectId(bookId);
+  if (!isValidBookId) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid bookId");
+  }
+  const result = await User.findOneAndUpdate(
+    {
+      _id: user.userId,
+      "readingList.bookId": new mongoose.Types.ObjectId(bookId),
+    },
+    { $set: { "readingList.$.finishState": true } },
+    { new: true }
+  );
+  return result;
+};
+
 const getReadingList = async (user: JwtPayload): Promise<IUser | null> => {
   const isExist = await User.findById(user.userId);
   if (!isExist) {
@@ -275,4 +321,6 @@ export const UserService = {
   getWishlist,
   addBookToReadingList,
   getReadingList,
+  bookReadingState,
+  bookFinishState,
 };

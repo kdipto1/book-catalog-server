@@ -43,6 +43,7 @@ const userSchema = new mongoose.Schema<IUser, UserModel>(
           ref: "Book",
         },
         readingState: Boolean,
+        finishState: Boolean,
       },
     ],
   },
