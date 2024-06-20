@@ -29,7 +29,7 @@ const getSingleBook = async (id: string): Promise<IBook | null> => {
 const updateBook = async (
   id: string,
   payload: Partial<IBook>,
-  user: JwtPayload
+  user: JwtPayload,
 ): Promise<IBook | null> => {
   const isExist = await Book.findById(id);
   if (!isExist) {
@@ -47,7 +47,7 @@ const updateBook = async (
 const addBookReview = async (
   id: string,
   payload: IReviews,
-  user: JwtPayload
+  user: JwtPayload,
 ): Promise<IBook | null> => {
   const isExist = await Book.findById(id);
   if (!isExist) {
@@ -64,7 +64,7 @@ const addBookReview = async (
     { $push: { reviews: review } },
     {
       new: true,
-    }
+    },
   );
   return result;
 };
@@ -76,7 +76,7 @@ const deleteBook = async (id: string, user: JwtPayload) => {
   if (user.userId !== isExist.addedBy.toString())
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      "You are not the owner of this book"
+      "You are not the owner of this book",
     );
   const result = await Book.findByIdAndDelete(id);
   if (!result)
@@ -89,7 +89,7 @@ const getAllBooks = async (
   limit: number,
   sortBy: string,
   sortOrder: SortOrder,
-  filters: IBookFilters
+  filters: IBookFilters,
 ) => {
   const sortCondition: { [key: string]: SortOrder } = {};
   if (sortBy && sortOrder) {
@@ -132,7 +132,7 @@ const getAllBooks = async (
     .skip(skip)
     .limit(limit)
     .exec();
-  const count = await Book.count(availableSearch);
+  const count = await Book.countDocuments(availableSearch);
   return {
     result,
     count,
@@ -142,7 +142,7 @@ const getAllBooks = async (
 const getHomeBooks = async (
   limit: number,
   sortBy: string,
-  sortOrder: SortOrder
+  sortOrder: SortOrder,
 ) => {
   const sortCondition: { [key: string]: SortOrder } = {};
   if (sortBy && sortOrder) {

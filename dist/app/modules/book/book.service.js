@@ -123,7 +123,7 @@ const getAllBooks = (skip, limit, sortBy, sortOrder, filters) => __awaiter(void 
         .skip(skip)
         .limit(limit)
         .exec();
-    const count = yield book_model_1.Book.count(availableSearch);
+    const count = yield book_model_1.Book.countDocuments(availableSearch);
     return {
         result,
         count,
