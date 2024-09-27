@@ -208,12 +208,12 @@ const getWishlist = (user) => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 const addBookToReadingList = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+    var _a;
     const isExist = yield user_model_1.User.findById(user.userId);
     if (!isExist) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User Not found!");
     }
-    const isBookAlreadyInWishlist = (_b = isExist.readingList) === null || _b === void 0 ? void 0 : _b.some(item => item.bookId.toString() === payload.bookId);
+    const isBookAlreadyInWishlist = (_a = isExist.readingList) === null || _a === void 0 ? void 0 : _a.some(item => item.bookId.toString() === payload.bookId);
     if (isBookAlreadyInWishlist) {
         throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Book already exists in reading list!");
     }
